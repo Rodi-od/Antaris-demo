@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бігборди в топових містах України — швидке розміщення | Антаріс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#191B20;
+    --paper:#F1EEE3;
+    --paper-2:#E8E3D3;
+    --asphalt:#14161B;
+    --asphalt-2:#20232B;
+    --yellow:#FFC53D;
+    --red:#E3472A;
+    --steel:#8A8F9C;
+    --steel-light:#C8CCD4;
+    --green:#3E7D5C;
+    --radius:2px;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .display{font-family:'Archivo Black', sans-serif; text-transform:uppercase; letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--red);
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:14px;
+    font-weight:600;
+  }
+  .eyebrow::before{content:""; width:22px; height:2px; background:var(--red); display:inline-block;}
+  section{padding:88px 0;}
+  @media(max-width:720px){ section{padding:56px 0;} }
+
+  /* ===== BUTTONS ===== */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-family:'Manrope',sans-serif; font-weight:800; font-size:15.5px;
+    padding:16px 28px; border-radius:var(--radius); border:2px solid transparent;
+    cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{ background:var(--red); color:#fff; box-shadow:4px 4px 0 var(--ink); }
+  .btn-primary:hover{ box-shadow:6px 6px 0 var(--ink); transform:translate(-2px,-2px); }
+  .btn-dark{ background:var(--ink); color:var(--paper); box-shadow:4px 4px 0 var(--yellow); }
+  .btn-dark:hover{ box-shadow:6px 6px 0 var(--yellow); transform:translate(-2px,-2px); }
+  .btn-ghost{ background:transparent; border-color:var(--ink); color:var(--ink); }
+  .btn-ghost:hover{ background:var(--ink); color:var(--paper); }
+  .btn-block{width:100%;}
+
+  /* ===== TOP BAR ===== */
+  .topbar{
+    background:var(--asphalt); color:var(--steel-light);
+    font-family:'JetBrains Mono',monospace; font-size:12.5px;
+    padding:8px 0; letter-spacing:.02em;
+  }
+  .topbar .wrap{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;}
+  .topbar .cities{color:var(--steel); }
+  .topbar .cities b{color:var(--yellow); font-weight:600;}
+  .topbar .contacts{display:flex; gap:18px; align-items:center;}
+  .topbar a.phone{color:#fff; font-weight:600;}
+  .msg-icons{display:flex; gap:10px;}
+  .msg-icons a{
+    width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:#2C303A; color:#fff; font-size:12px; font-weight:700;
+  }
+  .msg-icons a.viber{background:#7360F2;}
+  .msg-icons a.tg{background:#2AABEE;}
+
+  /* ===== HEADER / NAV ===== */
+  header.site{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper); border-bottom:3px solid var(--ink);
+  }
+  .navrow{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; gap:20px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Archivo Black',sans-serif; font-size:22px; letter-spacing:-0.02em;}
+  .logo .dot{width:12px; height:12px; background:var(--red); display:inline-block;}
+  .navlinks{display:flex; font-weight:700; font-size:14.5px;}
+  .navlinks a{opacity:.8; margin-right:28px;}
+  .navlinks a:last-child{margin-right:0;}
+  .navlinks a:hover{opacity:1; text-decoration:underline;}
+  .navcta{display:flex; align-items:center; gap:14px;}
+  .navcta .phonebig{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px;}
+  .navcta .phonebig span{display:block; font-size:10.5px; color:var(--steel); font-weight:500;}
+  .burger{display:none;}
+  @media(max-width:900px){
+    .navlinks{display:none;}
+    .navcta .phonebig{display:none;}
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:64px 0 40px;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,197,61,0.35), transparent 45%),
+      var(--paper);
+    overflow:hidden;
+  }
+  .hero .wrap{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;}
+  @media(max-width:980px){ .hero .wrap{grid-template-columns:1fr; gap:40px;} }
+
+  .hero h1{
+    font-size:clamp(34px,4.6vw,58px);
+    line-height:0.98;
+    margin-bottom:20px;
+  }
+  .hero h1 .city-slot{
+    color:var(--red);
+    display:inline-block;
+    position:relative;
+  }
+  .hero-sub{
+    font-size:18px; color:#3c3f47; max-width:520px; margin-bottom:28px; font-weight:500;
+  }
+  .trustline{display:flex; gap:22px; flex-wrap:wrap; margin-bottom:32px;}
+  .trustline .item{display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700;}
+  .trustline .item .ic{width:20px;height:20px;flex:none;}
+
+  /* lead form (hero) */
+  .leadform{
+    background:#fff; border:2px solid var(--ink); border-radius:var(--radius);
+    padding:22px; box-shadow:8px 8px 0 var(--ink); max-width:460px;
+  }
+  .leadform .ftitle{font-weight:800; font-size:16px; margin-bottom:4px;}
+  .leadform .fsub{font-size:12.5px; color:var(--steel); margin-bottom:16px; font-family:'JetBrains Mono',monospace;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:5px; color:#555;}
+  .field input, .field select{
+    width:100%; padding:12px 12px; border:1.5px solid #D8D3C4; border-radius:var(--radius);
+    font-family:'Manrope',sans-serif; font-size:15px; background:#FBFAF6;
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--red); outline-offset:1px; border-color:var(--red);}
+  .consent{font-size:11px; color:var(--steel); margin-top:10px; line-height:1.4;}
+
+  /* billboard visual */
+  .billboard-scene{position:relative; padding:20px 0;}
+  .skyline{position:absolute; bottom:14px; left:0; right:0; height:70px; opacity:.5;}
+  .board-pole{
+    width:14px; height:70px; background:linear-gradient(90deg,#3a3d45,#1c1e23,#3a3d45);
+    margin:0 auto; position:relative; top:-4px;
+  }
+  .board-face{
+    background:#fff; border:6px solid var(--ink); border-radius:2px;
+    box-shadow:0 18px 34px rgba(0,0,0,.25);
+    padding:26px 22px; position:relative; z-index:2;
+    transform:rotate(-1.2deg);
+  }
+  .board-face::before{ /* rivets */
+    content:""; position:absolute; inset:8px; border:1.5px dashed #D9D5C8; pointer-events:none;
+  }
+  .board-code{
+    position:absolute; top:-14px; left:16px; background:var(--yellow); color:var(--ink);
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px;
+    padding:3px 8px; border:2px solid var(--ink); z-index:3;
+  }
+  .board-city-rot{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:var(--red);
+    letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px; height:16px; overflow:hidden;
+  }
+  .board-headline{
+    font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(22px,2.6vw,30px);
+    line-height:1.02; margin-bottom:10px;
+  }
+  .board-headline .accent{color:var(--red);}
+  .board-sub{font-size:13.5px; color:#555; font-weight:600;}
+  .board-foot{display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; padding-top:14px; border-top:1.5px dashed #D9D5C8;}
+  .board-foot .price{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;}
+  .board-foot .price span{display:block; font-size:9.5px; color:var(--steel); font-weight:500;}
+  .board-badge{background:var(--ink); color:var(--yellow); font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; padding:4px 8px;}
+
+  /* ===== STATS STRIP ===== */
+  .stats{background:var(--asphalt); color:#fff;}
+  .stats .wrap{display:grid; grid-template-columns:repeat(4,1fr); gap:20px; padding:36px 24px;}
+  @media(max-width:720px){ .stats .wrap{grid-template-columns:repeat(2,1fr);} }
+  .stat b{
+    font-family:'Archivo Black',sans-serif; font-size:clamp(26px,3vw,40px); color:var(--yellow); display:block;
+  }
+  .stat span{font-size:12.5px; color:var(--steel-light); font-weight:600;}
+
+  /* ===== SECTION HEAD ===== */
+  .sec-head{max-width:640px; margin-bottom:44px;}
+  .sec-head h2{font-size:clamp(26px,3.4vw,40px); line-height:1.04; margin-bottom:12px;}
+  .sec-head p{font-size:16px; color:#4a4d54; font-weight:500;}
+
+  /* ===== BENEFITS ===== */
+  .benefits-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink);}
+  @media(max-width:860px){ .benefits-grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:560px){ .benefits-grid{grid-template-columns:1fr;} }
+  .benefit{background:var(--paper); padding:28px 24px;}
+  .benefit .num{font-family:'JetBrains Mono',monospace; color:var(--red); font-weight:700; font-size:13px; margin-bottom:14px;}
+  .benefit h3{font-size:18px; margin-bottom:8px; font-weight:800;}
+  .benefit p{font-size:14px; color:#54565d;}
+
+  /* ===== CITY PRICE TABLE ===== */
+  .city-table{width:100%; border-collapse:collapse; font-size:15px;}
+  .city-table thead th{
+    text-align:left; font-family:'JetBrains Mono',monospace; font-size:11.5px; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--steel); padding:10px 14px; border-bottom:2px solid var(--ink);
+  }
+  .city-table td{padding:16px 14px; border-bottom:1px solid #D9D5C8; font-weight:600;}
+  .city-table tr:hover td{background:#EDE9DB;}
+  .city-table .cityname{font-weight:800; display:flex; align-items:center; gap:10px;}
+  .city-table .flag{width:8px; height:8px; background:var(--red); border-radius:50%; display:inline-block;}
+  .city-table .price{font-family:'JetBrains Mono',monospace; font-weight:700;}
+  .city-table .lead-badge{
+    font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--yellow); padding:3px 8px; font-weight:700;
+  }
+  .city-table .rowbtn{
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; color:var(--red); display:inline-flex; align-items:center; gap:4px;
+  }
+  .table-wrap{overflow-x:auto; border:2px solid var(--ink); background:#fff;}
+  .table-note{font-size:12.5px; color:var(--steel); margin-top:14px; font-family:'JetBrains Mono',monospace;}
+
+  /* ===== PROCESS ===== */
+  .process{display:grid; grid-template-columns:repeat(5,1fr); gap:0; position:relative;}
+  @media(max-width:900px){ .process{grid-template-columns:repeat(2,1fr); gap:24px;} }
+  @media(max-width:520px){ .process{grid-template-columns:1fr;} }
+  .pstep{padding:0 18px 0 0; position:relative;}
+  .pstep .pnum{
+    font-family:'Archivo Black',sans-serif; font-size:38px; color:var(--paper-2); -webkit-text-stroke:1.5px var(--ink);
+    color:transparent; margin-bottom:12px; display:block;
+  }
+  .pstep h4{font-size:15.5px; font-weight:800; margin-bottom:8px;}
+  .pstep p{font-size:13px; color:#54565d;}
+  .pstep:not(:last-child)::after{
+    content:"→"; position:absolute; right:-6px; top:6px; font-size:20px; color:var(--red); font-weight:900;
+  }
+  @media(max-width:900px){ .pstep:not(:last-child)::after{display:none;} }
+
+  /* ===== PORTFOLIO ===== */
+  .portfolio-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink);}
+  @media(max-width:860px){ .portfolio-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:560px){ .portfolio-grid{grid-template-columns:1fr;} }
+  .case{background:#fff; padding:26px 22px; display:flex; flex-direction:column; gap:10px;}
+  .case .tag{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--red); font-weight:700; text-transform:uppercase; letter-spacing:.06em;}
+  .case h4{font-size:17px; font-weight:800;}
+  .case .metric{
+    margin-top:auto; padding-top:12px; border-top:1px dashed #D9D5C8;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; color:var(--green);
+  }
+  .case .metric span{display:block; font-family:'Manrope',sans-serif; font-size:11.5px; color:var(--steel); font-weight:600;}
+
+  /* ===== TESTIMONIALS ===== */
+  .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media(max-width:860px){ .testi-grid{grid-template-columns:1fr;} }
+  .testi{background:#fff; border:2px solid var(--ink); padding:24px; position:relative;}
+  .testi .quote-mark{font-family:'Archivo Black',sans-serif; font-size:44px; color:var(--yellow); line-height:1; margin-bottom:6px;}
+  .testi p.qt{font-size:14.5px; font-weight:600; margin-bottom:16px; color:#33353b;}
+  .testi .who{display:flex; align-items:center; gap:10px;}
+  .avatar{width:38px; height:38px; border-radius:50%; background:var(--ink); color:var(--yellow); display:flex; align-items:center; justify-content:center; font-family:'Archivo Black',sans-serif; font-size:14px;}
+  .who .name{font-weight:800; font-size:13.5px;}
+  .who .role{font-size:11.5px; color:var(--steel);}
+
+  /* ===== FAQ ===== */
+  .faq-item{border-bottom:2px solid var(--ink);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; padding:20px 4px;
+    font-family:'Manrope',sans-serif; font-weight:800; font-size:16.5px; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; gap:16px;
+  }
+  .faq-q .plus{font-family:'Archivo Black',sans-serif; font-size:22px; color:var(--red); transition:transform .2s ease; flex:none;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .faq-a p{padding:0 4px 20px; font-size:14.5px; color:#4a4d54; max-width:640px;}
+
+  /* ===== FINAL CTA ===== */
+  .final-cta{background:var(--ink); color:var(--paper); position:relative; overflow:hidden;}
+  .final-cta::before{
+    content:""; position:absolute; top:-40%; right:-10%; width:520px; height:520px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,197,61,.18), transparent 70%);
+  }
+  .final-cta .wrap{display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; position:relative;}
+  @media(max-width:900px){ .final-cta .wrap{grid-template-columns:1fr;} }
+  .final-cta h2{font-size:clamp(28px,3.6vw,42px); line-height:1.04; margin-bottom:16px;}
+  .final-cta p{color:var(--steel-light); font-size:16px; max-width:460px;}
+  .final-cta .leadform{box-shadow:8px 8px 0 var(--yellow);}
+
+  /* ===== FOOTER ===== */
+  footer{background:var(--asphalt); color:var(--steel-light); padding:44px 0 26px; font-size:13px;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:24px; padding-bottom:24px; border-bottom:1px solid #2C303A;}
+  footer .flogo{font-family:'Archivo Black',sans-serif; color:#fff; font-size:20px; text-transform:uppercase;}
+  footer .fcol h5{color:#fff; font-family:'JetBrains Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;}
+  footer .fcol li{margin-bottom:8px; opacity:.85;}
+  .foot-bottom{padding-top:18px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; opacity:.6; font-family:'JetBrains Mono',monospace; font-size:11.5px;}
+
+  /* ===== STICKY MOBILE BAR ===== */
+  .mobile-bar{
+    display:none; position:fixed; bottom:0; left:0; right:0; z-index:60;
+    background:var(--ink); padding:10px 14px; gap:10px;
+    box-shadow:0 -4px 14px rgba(0,0,0,.25);
+  }
+  .mobile-bar{display:flex;}
+  .mobile-bar a{flex:1; text-align:center; padding:12px 8px; font-weight:800; font-size:13.5px; border-radius:var(--radius);}
+  .mobile-bar .call{background:var(--yellow); color:var(--ink);}
+  .mobile-bar .msg{background:#2C303A; color:#fff; flex:0 0 52px;}
+  .mobile-bar .lead{background:var(--red); color:#fff;}
+  @media(min-width:721px){ .mobile-bar{display:none;} }
+  body{padding-bottom:0;}
+  @media(max-width:720px){ body{padding-bottom:68px;} }
+
+  ::selection{background:var(--yellow); color:var(--ink);}
+</style>
+</head>
+<body>
+
+<!-- TOP UTILITY BAR -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="cities">Розміщення в <b>Львові · Дніпрі · Одесі · Харкові · Чернігові</b> та ще 120+ містах України</div>
+    <div class="contacts">
+      <a class="phone" href="tel:+380688949650">(068) 894 96 50</a>
+      <div class="msg-icons">
+        <a class="viber" href="viber://chat?number=%2B380688949650" title="Viber">V</a>
+        <a class="tg" href="https://t.me/antaris_in_ua" title="Telegram">T</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site">
+  <div class="navrow">
+    <div class="logo"><span class="dot"></span>АНТАРІС</div>
+    <nav class="navlinks">
+      <a href="#cities">Міста</a>
+      <a href="#process">Як це працює</a>
+      <a href="#cases">Кейси</a>
+      <a href="#faq">Питання</a>
+    </nav>
+    <div class="navcta">
+      <div class="phonebig">(068) 894 96 50<span>щодня 9:00–19:00</span></div>
+      <a href="#lead" class="btn btn-primary">Отримати підбір бордів</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">Всеукраїнське агентство зовнішньої реклами · 18 років на ринку</div>
+      <h1>Бігборд у <span class="city-slot" id="cityRotator">Львові</span><br>за 3 дні — без переплат</h1>
+      <p class="hero-sub">Понад 50 000 перевірених рекламних площин по Україні. Підберемо адресну програму під бюджет, забронюємо вільні борди й надішлемо фотозвіт одразу після розміщення.</p>
+      <div class="trustline">
+        <div class="item">✓ Фотозвіт після кожного розміщення</div>
+        <div class="item">✓ Договір і закривні документи</div>
+        <div class="item">✓ Розміщення від 1 борду</div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div id="lead" class="leadform">
+        <div class="ftitle">Підберемо бігборди за 1 годину</div>
+        <div class="fsub">// заповнення форми — 30 секунд</div>
+        <form onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Заявку надіслано ✓'; this.querySelector('.btn').style.background='#3E7D5C';">
+          <div class="field">
+            <label>Місто розміщення</label>
+            <select required>
+              <option value="">Оберіть місто</option>
+              <option>Львів</option>
+              <option>Дніпро</option>
+              <option>Одеса</option>
+              <option>Харків</option>
+              <option>Чернігів</option>
+              <option>Інше місто</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Ім'я</label>
+            <input type="text" placeholder="Як до вас звертатись" required>
+          </div>
+          <div class="field">
+            <label>Телефон</label>
+            <input type="tel" placeholder="+38 (0__) ___ __ __" required>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Отримати підбір бордів →</button>
+          <div class="consent">Натискаючи кнопку, погоджуєтесь на обробку персональних даних. Без спаму — тільки прорахунок по вашому місту.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="wrap">
+    <div class="stat"><b>18</b><span>років на ринку зовнішньої реклами</span></div>
+    <div class="stat"><b>50 000+</b><span>бігбордів у базі по Україні</span></div>
+    <div class="stat"><b>100 000+</b><span>носіїв усіх форматів</span></div>
+    <div class="stat"><b>24</b><span>області покриття</span></div>
+  </div>
+</div>
+
+<!-- BENEFITS -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Чому Антаріс</div>
+      <h2>Компетентно, оперативно, з фотопідтвердженням</h2>
+      <p>Працюємо по всій Україні від «А» до «Я»: від підбору конструкції до фотозвіту про розміщення.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit"><div class="num">01</div><h3>Підбір під бюджет</h3><p>Формуємо адресну програму з понад 50 000 бігбордів під вашу ціль і кошторис — жодних зайвих переплат за посередників.</p></div>
+      <div class="benefit"><div class="num">02</div><h3>Розміщення за 3 дні</h3><p>Друк, монтаж і запуск рекламної кампанії у більшості міст — протягом 3 робочих днів після підтвердження.</p></div>
+      <div class="benefit"><div class="num">03</div><h3>100% фотозвіт</h3><p>Після монтажу надсилаємо фото кожної конструкції — бачите розміщення, не виходячи з офісу.</p></div>
+      <div class="benefit"><div class="num">04</div><h3>Один борд чи мережа</h3><p>Працюємо як з локальним бізнесом на 1 конструкції, так і з мережевими кампаніями на 7+ містах одночасно.</p></div>
+      <div class="benefit"><div class="num">05</div><h3>Прозорі документи</h3><p>Договір, акти виконаних робіт, своєчасний документообіг для бухгалтерії — без затримок.</p></div>
+      <div class="benefit"><div class="num">06</div><h3>Особистий менеджер</h3><p>Один контакт від заявки до фотозвіту — не доведеться пояснювати задачу заново кожного разу.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CITY TABLE -->
+<section id="cities" style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Топові напрямки</div>
+      <h2>Найбільш затребувані міста цього місяця</h2>
+      <p>Орієнтовна вартість оренди 3×6 м на місяць. Точна ціна залежить від локації, сторони та трафіку.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="city-table">
+        <thead>
+          <tr><th>Місто</th><th>Від, грн/міс</th><th>Популярні локації</th><th>Наявність</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="cityname"><span class="flag"></span>Львів</td><td class="price">8 000 – 20 000</td><td>Центр, в'їзди, Стрийська</td><td><span class="lead-badge">high demand</span></td><td><a class="rowbtn" href="#lead">Підібрати →</a></td></tr>
+          <tr><td class="cityname"><span class="flag"></span>Дніпро</td><td class="price">8 000 – 17 000</td><td>Центр, набережна, траси</td><td><span class="lead-badge">є вільні</span></td><td><a class="rowbtn" href="#lead">Підібрати →</a></td></tr>
+          <tr><td class="cityname"><span class="flag"></span>Одеса</td><td class="price">8 000 – 17 000</td><td>Центр, курортна зона</td><td><span class="lead-badge">є вільні</span></td><td><a class="rowbtn" href="#lead">Підібрати →</a></td></tr>
+          <tr><td class="cityname"><span class="flag"></span>Харків</td><td class="price">7 000 – 12 000</td><td>Центр, окружна дорога</td><td><span class="lead-badge">є вільні</span></td><td><a class="rowbtn" href="#lead">Підібрати →</a></td></tr>
+          <tr><td class="cityname"><span class="flag"></span>Чернігів</td><td class="price">6 000 – 11 000</td><td>Центр, виїзди з міста</td><td><span class="lead-badge">є вільні</span></td><td><a class="rowbtn" href="#lead">Підібрати →</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-note">// ціни орієнтовні, актуальну сітку зайнятості уточнює менеджер протягом 1 години</div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Як це працює</div>
+      <h2>Від заявки до фотозвіту — 5 кроків</h2>
+    </div>
+    <div class="process">
+      <div class="pstep"><span class="pnum">01</span><h4>Заявка</h4><p>Залишаєте місто й контакт — передзвонюємо протягом години.</p></div>
+      <div class="pstep"><span class="pnum">02</span><h4>Підбір адресної програми</h4><p>Показуємо вільні борди на мапі міста під ваш бюджет.</p></div>
+      <div class="pstep"><span class="pnum">03</span><h4>Бронь і оплата</h4><p>Фіксуємо обрані конструкції, узгоджуємо договір.</p></div>
+      <div class="pstep"><span class="pnum">04</span><h4>Друк і монтаж</h4><p>Друкуємо постер і розміщуємо у обумовлені терміни.</p></div>
+      <div class="pstep"><span class="pnum">05</span><h4>Фотозвіт</h4><p>Надсилаємо фото готового розміщення на кожній локації.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="cases" style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Приклади розміщень</div>
+      <h2>Кому вже допомогли розміститись</h2>
+    </div>
+    <div class="portfolio-grid">
+      <div class="case"><div class="tag">Роздрібна мережа · Львів</div><h4>Мережа магазинів будматеріалів</h4><div class="metric">7 бордів<span>по місту за 5 днів</span></div></div>
+      <div class="case"><div class="tag">Нерухомість · Дніпро</div><h4>ЖК бізнес-класу</h4><div class="metric">4 місяці<span>безперервного розміщення</span></div></div>
+      <div class="case"><div class="tag">Медицина · Одеса</div><h4>Мережа медичних центрів</h4><div class="metric">12 локацій<span>в 3 районах міста</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Відгуки</div>
+      <h2>Що кажуть клієнти</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi">
+        <div class="quote-mark">"</div>
+        <p class="qt">Команда Антаріс злагоджено й оперативно вирішує поставлені задачі, високий рівень відповідальності на кожному етапі співпраці.</p>
+        <div class="who"><div class="avatar">КТ</div><div><div class="name">ТОВ «Комфі Трейд»</div><div class="role">Департамент маркетингових комунікацій</div></div></div>
+      </div>
+      <div class="testi">
+        <div class="quote-mark">"</div>
+        <p class="qt">Усі поставлені задачі з розміщення на білбордах виконали точно і в обумовлені терміни — рекомендуємо як надійного партнера.</p>
+        <div class="who"><div class="avatar">МК</div><div><div class="name">ТОВ «Медікоменте»</div><div class="role">Партнер з 2020 року</div></div></div>
+      </div>
+      <div class="testi">
+        <div class="quote-mark">"</div>
+        <p class="qt">Оперативно підбирають площини під адресу й бюджет, надсилають фотозвіт без нагадувань. Зручно працювати без зайвих дзвінків.</p>
+        <div class="who"><div class="avatar">ОК</div><div><div class="name">Клієнт з Харкова</div><div class="role">Локальний бізнес, оренда 3 бордів</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--paper-2);">
+  <div class="wrap" style="max-width:820px;">
+    <div class="sec-head">
+      <div class="eyebrow">Питання</div>
+      <h2>Перед тим як залишити заявку</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">Скільки коштує розміщення на бігборді?<span class="plus">+</span></button>
+        <div class="faq-a"><p>Залежить від міста, локації, трафіку та терміну оренди. Орієнтовні ціни — у таблиці вище. Точну вартість під вашу адресу назве менеджер протягом години після заявки.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Чи можна замовити всього один борд?<span class="plus">+</span></button>
+        <div class="faq-a"><p>Так, працюємо як з одиничним розміщенням, так і з мережевими кампаніями на 7+ містах одночасно.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Як швидко розмістять рекламу?<span class="plus">+</span></button>
+        <div class="faq-a"><p>У більшості випадків — протягом 3 робочих днів після узгодження адресної програми й оплати, за умови готового макета.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Як я дізнаюсь, що рекламу розмістили?<span class="plus">+</span></button>
+        <div class="faq-a"><p>Після монтажу надсилаємо фотозвіт по кожній конструкції — бачите результат, не виїжджаючи на локацію.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Чи є знижка при оренді кількох бордів?<span class="plus">+</span></button>
+        <div class="faq-a"><p>Так, при бронюванні кількох конструкцій або довгостроковій оренді (від 3 місяців) діють додаткові знижки — уточнюйте у менеджера.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow" style="color:var(--yellow);">Готові розмістити рекламу</div>
+      <h2>Залиште заявку — прорахуємо вашу кампанію протягом години</h2>
+      <p>Підберемо вільні борди у Львові, Дніпрі, Одесі, Харкові, Чернігові чи будь-якому іншому місті України.</p>
+    </div>
+    <div class="leadform">
+      <div class="ftitle">Швидка заявка</div>
+      <div class="fsub">// без зобов'язань</div>
+      <form onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Заявку надіслано ✓'; this.querySelector('.btn').style.background='#3E7D5C';">
+        <div class="field">
+          <label>Ім'я та телефон</label>
+          <input type="text" placeholder="Ім'я" required style="margin-bottom:8px;">
+          <input type="tel" placeholder="+38 (0__) ___ __ __" required>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Отримати прорахунок →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="flogo">Антаріс</div>
+      <p style="margin-top:10px; max-width:260px; opacity:.75;">Всеукраїнське агентство зовнішньої реклами. 18 років на ринку.</p>
+    </div>
+    <div class="fcol">
+      <h5>Контакти</h5>
+      <ul>
+        <li><a href="tel:+380688949650">(068) 894 96 50</a></li>
+        <li><a href="tel:+380664702445">(066) 470 24 45</a></li>
+        <li><a href="tel:+380638525708">(063) 852 57 08</a></li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h5>Міста</h5>
+      <ul>
+        <li>Львів</li><li>Дніпро</li><li>Одеса</li><li>Харків</li><li>Чернігів</li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h5>Носії</h5>
+      <ul>
+        <li>Бігборди</li><li>Сітілайти</li><li>Скроли</li><li>Відеоборди</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© antaris.in.ua — прототип лендінгу для A/B-тестування</span>
+    <span>v1.0 — топ-міста</span>
+  </div>
+</footer>
+
+<!-- MOBILE STICKY BAR -->
+<div class="mobile-bar">
+  <a class="call" href="tel:+380688949650">📞 Подзвонити</a>
+  <a class="msg" href="viber://chat?number=%2B380688949650">V</a>
+  <a class="lead" href="#lead">Заявка</a>
+</div>
+
+<script>
+  // city rotator in hero headline
+  const cities = ["Львові","Дніпрі","Одесі","Харкові","Чернігові"];
+  let ci = 0;
+  const slot = document.getElementById('cityRotator');
+  setInterval(()=>{
+    ci = (ci+1) % cities.length;
+    slot.style.opacity = 0;
+    setTimeout(()=>{ slot.textContent = cities[ci]; slot.style.opacity = 1; }, 220);
+  }, 2200);
+  slot.style.transition = 'opacity .22s ease';
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o=>{
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
